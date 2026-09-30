@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { ResultDetailScreen } from "@/features/result/ResultDetailScreen";
+import { ResultDetailRoute } from "@/features/result/ResultDetailRoute";
 import { history } from "@/data/mock";
 
 interface PageProps {
@@ -15,28 +14,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { id } = await params;
   const record = history.find((item) => item.id === id);
 
-  if (!record) {
-    return {
-      title: "Результат не найден"
-    };
-  }
-
   return {
-    title: record.title,
-    description: record.description,
+    title: record?.title ?? "Результат генерации",
+    description:
+      record?.description ??
+      "Demo-результат генерации NEXA FLOW.",
     alternates: {
-      canonical: "/history/" + record.id
+      canonical: "/history/" + id
     }
   };
 }
 
 export default async function ResultDetailPage({ params }: PageProps) {
   const { id } = await params;
-  const record = history.find((item) => item.id === id);
-
-  if (!record) {
-    notFound();
-  }
-
-  return <ResultDetailScreen record={record} />;
+  return <ResultDetailRoute id={id} />;
 }
