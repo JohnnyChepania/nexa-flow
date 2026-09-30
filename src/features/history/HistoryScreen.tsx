@@ -1,13 +1,15 @@
 "use client";
 
 import { ArrowDownUp, Filter, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { HistoryTable } from "@/components/HistoryTable";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { PageTransition } from "@/components/ui/PageTransition";
 import { history } from "@/data/mock";
+import { getStoredGenerationRecords } from "@/lib/generation-storage";
+import type { GenerationRecord } from "@/lib/types";
 
 type StatusFilter = "all" | "completed" | "processing" | "error";
 type TypeFilter = "all" | "image" | "text" | "automation";
@@ -18,9 +20,21 @@ export function HistoryScreen() {
   const [type, setType] = useState<TypeFilter>("all");
   const [sort, setSort] = useState<Sort>("date-desc");
   const [query, setQuery] = useState("");
+  const [storedRecords, setStoredRecords] = useState<GenerationRecord[]>([]);
+
+  useEffect(() => {
+    setStoredRecords(getStoredGenerationRecords());
+  }, []);
+
+  const allRecords = useMemo(() => {
+    const byId = new Map<string, GenerationRecord>();
+    history.forEach((record) => byId.set(record.id, record));
+    storedRecords.forEach((record) => byId.set(record.id, record));
+    return Array.from(byId.values());
+  }, [storedRecords]);
 
   const records = useMemo(() => {
-    const visible = history.filter((record) => {
+    const visible = allRecords.filter((record) => {
       const matchesStatus = status === "all" || record.status === status;
       const matchesType = type === "all" || record.type === type;
       const search = query.trim().toLowerCase();
@@ -38,7 +52,7 @@ export function HistoryScreen() {
       if (sort === "project") return a.projectName.localeCompare(b.projectName, "ru");
       return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
-  }, [query, sort, status, type]);
+  }, [allRecords, query, sort, status, type]);
 
   return (
     <AppShell>
