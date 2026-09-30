@@ -14,6 +14,7 @@ import type {
   UploadFileMeta
 } from "@/lib/types";
 import { requestGeneration } from "@/lib/generation-api";
+import { saveGenerationRecord } from "@/lib/generation-storage";
 
 const typeOptions: Array<{ value: ProcessingType; label: string; hint: string }> = [
   { value: "image", label: "Изображение", hint: "Визуалы, обложки, адаптации" },
@@ -72,6 +73,7 @@ export function Generator() {
       clearInterval(interval);
       setProgress(100);
       setResult(response.record);
+      saveGenerationRecord(response.record);
       setStatus("completed");
     } catch {
       clearInterval(interval);
