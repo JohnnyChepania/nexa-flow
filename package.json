@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "lint": "next lint",
+    "lint": "eslint . --max-warnings=0",
     "start": "next start"
   },
   "dependencies": {
@@ -19,6 +19,7 @@
     "@types/node": "^24.7.2",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.1",
+    "@eslint/eslintrc": "^3.3.1",
     "autoprefixer": "^10.4.23",
     "eslint": "^9.37.0",
     "eslint-config-next": "^15.5.4",
